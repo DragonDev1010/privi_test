@@ -1,8 +1,8 @@
 import { reject } from 'q'
 import React, { Component } from 'react'
-import Web3 from 'web3'
+import Web3, {ecRecover} from 'web3'
 import './App.css'
-import {recoverTypedSignature_v4} from 'eth-sig-util'
+import EthSigUtil from 'eth-sig-util'
 const msgParams = JSON.stringify({
 	domain: {
 		// Defining the chain aka Rinkeby testnet or Ethereum Main Net
@@ -73,43 +73,57 @@ class App extends Component {
 		this.verify = this.verify.bind(this)
 	}
 	async sign() {
-		const web3 = new Web3(Web3.givenProvider || "HTTP://127.0.0.1:7545")
-		const accounts = await web3.eth.getAccounts()
-		var from = accounts[0]
-	
-		var params = [from, msgParams];
-		var method = 'eth_signTypedData_v4';  
-		var res = ''
+		var web3, accounts
+		if(typeof window.ethereum === 'undefined') {
+			console.log('please install metamask')
+		} else {
+			web3 = new Web3(Web3.givenProvider || "HTTP://127.0.0.1:7545")
+			accounts = await web3.eth.getAccounts()
+			if(accounts.length == 0) {
+				console.log('please unlock wallet and connect website')
+				window.ethereum.request({method: 'eth_requestAccounts'})
+			} else {
 
-		const promise = new Promise((resolve, reject) => {
-			web3.currentProvider.sendAsync(
-				{
-					method,
-					params,
-					from,
-				},
-				function (err, result) {
-					if (err) return console.dir(err);
-					if (result.error) {
-						alert(result.error.message);
-					}
-					if (result.error) return console.error('ERROR', result);
-					
-					res = JSON.stringify(result.result)
-					console.log('TYPED SIGNED:' + res);
-					resolve(res)
-				}
-			);
-		})
-		promise.then(value => {
-			this.setState({
-				signResult: value
-			}) 
-		})
+			
+				var from = accounts[0]
+
+				var params = [from, msgParams];
+				var method = 'eth_signTypedData_v4';  
+				var res = ''
+		
+				const promise = new Promise((resolve, reject) => {
+					web3.currentProvider.sendAsync(
+						{
+							method,
+							params,
+							from,
+						},
+						function (err, result) {
+							if (err) return console.dir(err);
+							if (result.error) {
+								alert(result.error.message);
+							}
+							if (result.error) return console.error('ERROR', result);
+							
+							res = JSON.stringify(result.result)
+							console.log('TYPED SIGNED:' + res);
+							resolve(res)
+						}
+					);
+				})
+				promise.then(value => {
+					this.setState({
+						signResult: value
+					}) 
+				})
+			}
+		}
 	}
   async verify() {
-		const msgSender = recoverTypedSignature_v4(msgParams, "0x392ecba2b9e2f4023e90e8da043d47c5e3a7cd4974d58f4863889a00d7521cb669dc10187ecb1cd2df15f88484dbd1b8a8e6de4062580207feaf8a06c98fc5931c")
-		console.log(this.state.signResult)
+		const msgSender = EthSigUtil.recoverTypedSignature_v4({
+			data: msgParams, 
+			sig: "0x392ecba2b9e2f4023e90e8da043d47c5e3a7cd4974d58f4863889a00d7521cb669dc10187ecb1cd2df15f88484dbd1b8a8e6de4062580207feaf8a06c98fc5931c"})
+		// console.log(this.state.signResult)
 	}
 	render() {
 		return (
