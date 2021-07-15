@@ -6,7 +6,7 @@ import EthSigUtil from 'eth-sig-util'
 const msgParams = JSON.stringify({
 	domain: {
 		// Defining the chain aka Rinkeby testnet or Ethereum Main Net
-		chainId: 97,
+		chainId: 1,
 		// Give a user friendly name to the specific contract you are signing for.
 		name: 'Ether Mail',
 		// If name isn't enough add verifying contract to make sure you are establishing contracts with the proper entity
@@ -83,7 +83,6 @@ class App extends Component {
 				console.log('please unlock wallet and connect website')
 				window.ethereum.request({method: 'eth_requestAccounts'})
 			} else {
-
 			
 				var from = accounts[0]
 
