@@ -1,3 +1,21 @@
+Task: 
+Create simple react web application that will have button to sign transaction with metamask. On the metamask you should provide user with dialog to sign payload as you see in the block below. For signing you can use eg. signTypedData method. After signing there should be another button activated “Verify” to verify the signature.
+{
+    "Data": {
+        "Function": "mint",
+        "Address": "0x4c6a375e66440949149720f273d69fcd11b1564b",
+        "Signature": "0xblababl",
+        "Payload": {
+            "Type": "Initial supply",
+            "Token": "pUSD",
+            "From": "0x4c6a375e66440949149720f273d69fcd11b1564b",
+            "To": "0xeec9c9550b46cc865dc550bc17097fb7653a82f8",
+            "Amount": "1000"
+        }
+    },
+    "Caller": "PRIVI"
+}
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
